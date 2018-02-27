@@ -1,0 +1,30 @@
+{
+  "name": "its-mieger/annotations",
+  "description": "PHP annotations for laravel",
+  "type": "library",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Christopher Mieger",
+      "email": "info@its-mieger.de"
+    }
+  ],
+  "autoload": {
+    "psr-0": {
+      "": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-0": {
+      "": "test/"
+    }
+  },
+  "require": {
+      "php": "^7.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "6.5.5",
+    "orchestra/testbench": "^3.5",
+    "nette/php-generator": "^3.1"
+  }
+}
