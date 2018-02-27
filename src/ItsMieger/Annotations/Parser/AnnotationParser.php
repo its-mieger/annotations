@@ -67,6 +67,9 @@
 
 				// escaped char
 				if ($escaped) {
+					if (!in_array($currChar, ['\\', '"', '\'', '@', '(', ')', '[', ']', '{', '}']))
+						$currChar = '\\' . $currChar;
+
 					switch($annotationSection) {
 						case 'NAME':
 							$annotationName .= $currChar;
