@@ -152,7 +152,7 @@ the implementing class:
 		/**
 		 * @InterfaceAnnotation
 		 * @OverriddenAnnotation(fromInterface)
-		 * /
+		 */
 		 public function getValue();
 	}
 	
@@ -161,7 +161,7 @@ the implementing class:
 		/**
 		 * @ClassAnnotation
 		 * @OverriddenAnnotation(fromClass)
-		 * /
+		 */
 		 public function getValue();
 	}
 	
