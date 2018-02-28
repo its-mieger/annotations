@@ -18,20 +18,22 @@ examples:
 
 	@Annotation
 	@Annotation arg1 arg2
-	@Annotation arg1 "argument 2"
-	@Annotation arg1=7 arg2="argument 2"
 	
 	@Annotation(arg1, arg2)
-	@Annotation(arg1 "argument 2")
+	@Annotation(arg1, "argument 2")
 	@Annotation(arg1=7, arg2=8)
 	@Annotation(
 		arg1,
 		arg2
 	)
-	
-As you see, quotes may be used for arguments and the braces syntax allows to use multiple lines for
-defining annotations. Use `\` (backslash) to escape characters with special meaning, eg.: 
-`"quote \" in text"`.
+
+First two annotations demonstrate the simple annotation syntax. Arguments are separated by whitespaces.
+
+However sometimes the annotations require more complex parameters. Thus you may use the extended syntax
+which is identified by an open brace **directly** after the annotation name. This allows you to use
+quotes, specify argument keys or use multiple lines for your annotations.
+
+Use `\` (backslash) to escape characters with special meaning, eg.: `"quote \" in text"`.
  
 ## Creating annotations
 Implementing custom annotations is very easy. Simply extend the `AbstractAnnotation`-class:

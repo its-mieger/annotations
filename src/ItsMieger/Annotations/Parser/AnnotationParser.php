@@ -154,70 +154,89 @@
 									break;
 								}
 
-								switch ($currChar) {
-									case '"';
-									case "'";
-										// start of quote block
-										$quoteBlock = $currChar;
-										break;
+								if ($annotationExtendedSyntax) {
+									// extended syntax
 
-									case '(';
-									case '{';
-									case '[';
-										// start of expression
-										$expressionStack[] = $currChar;
-										break;
+									switch ($currChar) {
+										case '"';
+										case "'";
+											// start of quote block
+											$quoteBlock = $currChar;
+											break;
 
-									case ')';
-									case ']';
-									case '}';
-										// end of expression
-										if (end($expressionStack) != [')' => '(', ']' => '[', '}' => '{'][$currChar])
-											throw new AnnotationParseException($docComment,'Unexpected "' . $currChar . '" in annotation @' . $annotationName);
-										else
-											array_pop($expressionStack);
+										case '(';
+										case '{';
+										case '[';
+											// start of expression
+											$expressionStack[] = $currChar;
+											break;
 
-										// end annotation on last closing brace
-										if ($currChar == ')' && empty($expressionStack))
-											$endAnnotation();
-										break;
+										case ')';
+										case ']';
+										case '}';
+											// end of expression
+											if (end($expressionStack) != [')' => '(', ']' => '[', '}' => '{'][$currChar])
+												throw new AnnotationParseException($docComment,'Unexpected "' . $currChar . '" in annotation @' . $annotationName);
+											else
+												array_pop($expressionStack);
 
-									case "\n";
-										if (empty($expressionStack))
-											$endAnnotation();
-										break;
+											// end annotation on last closing brace
+											if ($currChar == ')' && empty($expressionStack))
+												$endAnnotation();
+											break;
 
-									case ' ';
-									case "\t";
-										if (!$annotationExtendedSyntax && end($annotationParams))
+										case ',':
+											// for extended syntax, this starts a new parameter
+
+											if ($expressionStack != ['('])
+												throw new AnnotationParseException($docComment, 'Unexpected "' . $currChar . '" in annotation @' . $annotationName);
+
 											$annotationParams[] = '';
+											break;
 
-										break;
+										case '=':
+											// named parameters
 
-									case ',':
-										// for extended syntax, this starts a new parameter
+											$parameterKeys = array_keys($annotationParams);
+											if (!is_numeric(end($parameterKeys)) || !end($annotationParams))
+												throw new AnnotationParseException($docComment, 'Unexpected "' . $currChar . '" in annotation @' . $annotationName);
 
-										if (!$annotationExtendedSyntax || $expressionStack != ['('])
-											throw new AnnotationParseException($docComment,'Unexpected "' . $currChar . '" in annotation @' . $annotationName);
+											$key                    = array_pop($annotationParams);
+											$annotationParams[$key] = '';
+											break;
 
-										$annotationParams[] = '';
-										break;
+										case ' ':
+										case "\t";
+										case "\n";
+											// ignore these white space characters
+											break;
 
-									case '=':
-										// named parameters
+										default:
 
-										$parameterKeys = array_keys($annotationParams);
-										if (!is_numeric(end($parameterKeys)) || !end($annotationParams))
-											throw new AnnotationParseException($docComment,'Unexpected "' . $currChar . '" in annotation @' . $annotationName);
+											// append to last parameter
+											$appendLastParameter($currChar);
+									}
+								}
+								else {
+									// simple syntax
 
-										$key                    = array_pop($annotationParams);
-										$annotationParams[$key] = '';
-										break;
+									switch($currChar) {
+										case "\n";
+											$endAnnotation();
+											break;
 
-									default:
+										case ' ';
+										case "\t";
+											if (end($annotationParams))
+												$annotationParams[] = '';
 
-										// append to last parameter
-										$appendLastParameter($currChar);
+											break;
+
+										default:
+
+											// append to last parameter
+											$appendLastParameter($currChar);
+									}
 								}
 
 
