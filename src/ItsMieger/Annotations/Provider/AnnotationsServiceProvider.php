@@ -3,7 +3,7 @@
 	namespace ItsMieger\Annotations\Provider;
 
 
-	use Illuminate\Support\Facades\Event;
+	use Illuminate\Contracts\Events\Dispatcher;
 	use Illuminate\Support\ServiceProvider;
 	use ItsMieger\Annotations\AnnotationsManager;
 	use ItsMieger\Annotations\Cache\ClearsAnnotationCache;
@@ -24,21 +24,28 @@
 		protected $packageRoot = __DIR__ . '/../../../..';
 
 		/**
+		 * Indicates if loading of the provider is deferred.
+		 *
+		 * @var bool
+		 */
+		protected $defer = true;
+
+		/**
 		 * Bootstrap the application services.
 		 *
 		 * @return void
 		 */
-		public function boot() {
+		public function boot(Dispatcher $events) {
 
 			// register commands
 			if ($this->app->runningInConsole()) {
 				$this->commands([
-					ClearAnnotationCacheCommand::class
+					'command.' . self::PACKAGE_NAME . '.clear'
 				]);
 			}
 
 			// listen for cache clear events
-			Event::listen('cache:clearing', function () {
+			$events->listen('cache:clearing', function () {
 				$this->clearAnnotationCache();
 			});
 		}
@@ -99,7 +106,29 @@
 					)
 				);
 			});
+
+			// register clear cache command
+			$this->app->singleton('command.' . self::PACKAGE_NAME . '.clear', function () {
+				return new ClearAnnotationCacheCommand();
+			});
 		}
+
+		/**
+		 * Get the services provided by the provider.
+		 *
+		 * @return array
+		 */
+		public function provides() {
+			return [
+				self::PACKAGE_NAME . '.manager',
+				self::PACKAGE_NAME . '.parser',
+				self::PACKAGE_NAME . '.cache',
+				self::PACKAGE_NAME . '.reader',
+				self::PACKAGE_NAME . '.inheritedReader',
+				'command.' . self::PACKAGE_NAME . '.clear',
+			];
+		}
+
 
 		/**
 		 * Registers a new cache driver resolver

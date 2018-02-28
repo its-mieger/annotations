@@ -10,6 +10,7 @@
 	use ItsMieger\Annotations\AnnotationsManager;
 	use ItsMieger\Annotations\Cache\MemoryCache;
 	use ItsMieger\Annotations\Cache\PhpCache;
+	use ItsMieger\Annotations\Commands\ClearAnnotationCacheCommand;
 	use ItsMieger\Annotations\Contracts\AnnotationCache;
 	use ItsMieger\Annotations\Parser\AnnotationParser;
 	use ItsMieger\Annotations\Provider\AnnotationsServiceProvider;
@@ -94,5 +95,12 @@
 				->willReturnSelf();
 
 			$this->assertEquals(0, Artisan::call('cache:clear'));
+		}
+
+		public function testClearCacheCommandRegistered() {
+			$resolved = resolve('command.' . AnnotationsServiceProvider::PACKAGE_NAME . '.clear');
+
+			$this->assertInstanceOf(ClearAnnotationCacheCommand::class, $resolved);
+			$this->assertSame($resolved, resolve('command.' . AnnotationsServiceProvider::PACKAGE_NAME . '.clear'));
 		}
 	}
