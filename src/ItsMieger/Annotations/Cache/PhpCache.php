@@ -34,6 +34,9 @@
 		 * @param string $cachePath The cache path
 		 */
 		public function __construct($cachePath) {
+			if (empty($cachePath))
+				throw new \InvalidArgumentException('Cache path must be specified!');
+
 			$this->cachePath = $cachePath;
 
 			// create cache path

@@ -25,6 +25,12 @@
 			}
 		}
 
+		public function testEmptyStringPassedAsCacheDir() {
+			$this->expectException(\InvalidArgumentException::class);
+
+			new PhpCache('');
+		}
+
 		public function testReadWrite() {
 			$cache = new PhpCache($this->getTestDir());
 

@@ -38,6 +38,6 @@
 		 * @return PhpCache
 		 */
 		protected function createCachePhp($config) {
-			return new PhpCache($config['directory'] ?? sys_get_temp_dir());
+			return new PhpCache(($config['directory'] ?? null)?: sys_get_temp_dir());
 		}
 	}
