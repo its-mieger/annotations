@@ -4,7 +4,8 @@ other annotation libraries it supports inheritance of annotations.
 
 ## Installation
 
-After updating composer, add the service provider to the providers array in config/app.php
+If not using package auto-discovery, you must add the service provider to the providers array
+in config/app.php
 
 	ItsMieger\Annotations\Provider\AnnotationsServiceProvider::class,
 	
