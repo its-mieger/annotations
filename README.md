@@ -27,12 +27,20 @@ examples:
 		arg1,
 		arg2
 	)
+	
+	// JSON
+	@Annotation(arg1, {"x": 15})
+	@Annotation(arg1, [1, 5, 17])
+	@Annotation(arg1, (true))
 
 First two annotations demonstrate the simple annotation syntax. Arguments are separated by whitespaces.
 
 However sometimes the annotations require more complex parameters. Thus you may use the extended syntax
 which is identified by an open brace **directly** after the annotation name. This allows you to use
 quotes, specify argument keys or use multiple lines for your annotations.
+
+You may even use JSON for parameters as the last three examples show. JSON expressions
+are embraced by "{" (associative array), "[" (simple array) and "(" for simple expressions.
 
 Use `\` (backslash) to escape characters with special meaning, eg.: `"quote \" in text"`.
  

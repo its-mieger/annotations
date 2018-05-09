@@ -39,6 +39,7 @@
 			$annotationName           = null;
 			$annotationParams         = null;
 			$annotationExtendedSyntax = false;
+			$jsonExpression           = null;
 
 			// ends the currently parsed annotation and puts it on return stack
 			$endAnnotation = function() use (&$annotations, &$annotationName, &$annotationParams, &$annotationExtendedSyntax, &$annotationSection) {
@@ -157,6 +158,12 @@
 								if ($annotationExtendedSyntax) {
 									// extended syntax
 
+									// catch for JSON expression
+									if ($jsonExpression && !in_array($currChar, [')', '}', ']'])) {
+										$jsonExpression .= $currChar;
+										continue;
+									}
+
 									switch ($currChar) {
 										case '"';
 										case "'";
@@ -167,18 +174,30 @@
 										case '(';
 										case '{';
 										case '[';
-											// start of expression
+											// start of JSON expression
+											$jsonExpression .= $currChar;
 											$expressionStack[] = $currChar;
 											break;
 
 										case ')';
 										case ']';
 										case '}';
-											// end of expression
+											// end of (JSON) expression
 											if (end($expressionStack) != [')' => '(', ']' => '[', '}' => '{'][$currChar])
 												throw new AnnotationParseException($docComment,'Unexpected "' . $currChar . '" in annotation @' . $annotationName);
 											else
 												array_pop($expressionStack);
+
+											// end php expression
+											if (count($expressionStack) == 1) {
+
+												$keys = array_keys($annotationParams);
+												$annotationParams[end($keys)] = json_decode(trim($jsonExpression . $currChar, ')('), true);
+												if (json_last_error())
+													throw new AnnotationParseException($docComment, 'Invalid JSON (' . json_last_error_msg() . ') in annotation @' . $annotationName);
+
+												$jsonExpression = null;
+											}
 
 											// end annotation on last closing brace
 											if ($currChar == ')' && empty($expressionStack))

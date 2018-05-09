@@ -32,6 +32,9 @@
 			* @My\Annotation\Full\Name
 			* @anno14 ,"\'n {
 			* @anno15 a=asd, b=bgsd
+			* @anno16({"x": 5})
+			* @anno17((5))
+			* @anno18([5, "asd"])
 			*/';
 
 			$annotations = (new AnnotationParser())->parseDocComment($comment);
@@ -120,6 +123,21 @@
 			$currAnnotation = $annotations[16];
 			$this->assertEquals('anno15', $currAnnotation->getName());
 			$this->assertEquals(['a=asd,', 'b=bgsd'], $currAnnotation->getParameters());
+
+			// anno16
+			$currAnnotation = $annotations[17];
+			$this->assertEquals('anno16', $currAnnotation->getName());
+			$this->assertEquals([['x' => 5]], $currAnnotation->getParameters());
+
+			// anno17
+			$currAnnotation = $annotations[18];
+			$this->assertEquals('anno17', $currAnnotation->getName());
+			$this->assertEquals([5], $currAnnotation->getParameters());
+
+			// anno18
+			$currAnnotation = $annotations[19];
+			$this->assertEquals('anno18', $currAnnotation->getName());
+			$this->assertEquals([[5, "asd"]], $currAnnotation->getParameters());
 		}
 
 
