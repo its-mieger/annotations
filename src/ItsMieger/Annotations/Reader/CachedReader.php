@@ -60,11 +60,13 @@
 		 * @inheritDoc
 		 */
 		public function getClassAnnotations($cls, $filter = []) {
-			$annotations = $this->cache->get($this->getReaderKey(), $cls, 'class', 'cls');
+			$clsName = $this->className($cls);
+
+			$annotations = $this->cache->get($this->getReaderKey(), $clsName, 'class', 'cls');
 
 			if ($annotations === null) {
 				$annotations = $this->reader->getClassAnnotations($cls);
-				$this->cache->put($this->getReaderKey(), $cls, 'class', 'cls', $annotations);
+				$this->cache->put($this->getReaderKey(), $clsName, 'class', 'cls', $annotations);
 			}
 
 			return $this->filterAnnotations($annotations, $filter);
@@ -83,11 +85,13 @@
 		 * @inheritDoc
 		 */
 		public function getMethodAnnotations($cls, $method, $filter = []) {
-			$annotations = $this->cache->get($this->getReaderKey(), $cls, 'method', $method);
+			$clsName = $this->className($cls);
+
+			$annotations = $this->cache->get($this->getReaderKey(), $clsName, 'method', $method);
 
 			if ($annotations === null) {
 				$annotations = $this->reader->getMethodAnnotations($cls, $method);
-				$this->cache->put($this->getReaderKey(), $cls, 'method', $method, $annotations);
+				$this->cache->put($this->getReaderKey(), $clsName, 'method', $method, $annotations);
 			}
 
 			return $this->filterAnnotations($annotations, $filter);
@@ -106,11 +110,13 @@
 		 * @inheritDoc
 		 */
 		public function getPropertyAnnotations($cls, $property, $filter = []) {
-			$annotations = $this->cache->get($this->getReaderKey(), $cls, 'property', $property);
+			$clsName = $this->className($cls);
+
+			$annotations = $this->cache->get($this->getReaderKey(), $clsName, 'property', $property);
 
 			if ($annotations === null) {
 				$annotations = $this->reader->getPropertyAnnotations($cls, $property);
-				$this->cache->put($this->getReaderKey(), $cls, 'property', $property, $annotations);
+				$this->cache->put($this->getReaderKey(), $clsName, 'property', $property, $annotations);
 			}
 
 			return $this->filterAnnotations($annotations, $filter);
@@ -123,6 +129,20 @@
 			$ret = $this->getPropertyAnnotations($cls, $property, [$annotationName]);
 
 			return array_pop($ret);
+		}
+
+		/**
+		 *
+		 * @param $cls
+		 * @return string
+		 */
+		protected function className($cls) {
+			if ($cls instanceof \ReflectionClass)
+				return $cls->getName();
+			elseif (is_object($cls))
+				return get_class($cls);
+			else
+				return $cls;
 		}
 
 		/**
